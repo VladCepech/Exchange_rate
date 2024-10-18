@@ -1,5 +1,4 @@
 import requests
-import json
 from tkinter import *
 from tkinter import ttk
 
@@ -180,6 +179,8 @@ def func_exchange():
     code_target = combo_to.get()
     code_base = combo_from.get()
     code_base_second = combo_from_second.get()
+    sum_f = float(sum_from.get())
+    sum_fs = float(sum_from_second.get())
     if code_target and code_base and code_base_second:
         answer = requests.get(f"https://open.er-api.com/v6/latest/{code_base}")
         answer_second = requests.get(f"https://open.er-api.com/v6/latest/{code_base_second}")
@@ -187,8 +188,10 @@ def func_exchange():
         json_info_second = answer_second.json()
         if code_target in json_info["rates"] and code_target in json_info_second["rates"]:
             rez = json_info["rates"][code_target]
+            sum_rez = float(rez) * sum_f
             rez_second = json_info_second["rates"][code_target]
-            content_l.config(text=f"1 {code_base} - {rez} {code_target} \n 1 {code_base_second} - {rez_second} {code_target} ")
+            sum_rez_second = float(rez_second) * sum_fs
+            content_l.config(text=f"{sum_f} {code_base} - {sum_rez} {code_target} \n {sum_fs} {code_base_second} - {sum_rez_second} {code_target} ")
             content_l.config(fg="green")
         else:
             content_l.config(text=f"Кода валюты {code_target} не найдено")
@@ -241,11 +244,18 @@ combo_from = ttk.Combobox(window, values=sp_currency)
 combo_from.pack(pady = [10,0])
 combo_from.bind("<<ComboboxSelected>>", update_from_label)
 
+#Лэйбл для отображения текста для ввода суммы базовой валюты
+t_m_from = Label(window, text="Введите сумму базовой валюты 1:")
+t_m_from.pack(pady = [10,10])
+#Ввод суммы для первой базовой валюты для конвертации
+sum_from = Entry(window)
+sum_from.pack()
+
 #Лэйбл для отображения названия выбранной базовой валюты
 curr_from_name = Label(window)
 curr_from_name.pack(pady = [0,10])
 
-#Лэйбл для отображения текста для выбора базовой валюты
+#Лэйбл для отображения текста для выбора базовой валюты 2
 t_m_from_second = Label(window, text="Выберите код базовой валюты 2:")
 t_m_from_second.pack(pady = [10,10])
 
@@ -253,6 +263,13 @@ t_m_from_second.pack(pady = [10,10])
 combo_from_second = ttk.Combobox(window, values=sp_currency)
 combo_from_second.pack(pady = [10,0])
 combo_from_second.bind("<<ComboboxSelected>>", update_from_label_second)
+
+#Лэйбл для отображения текста для ввода суммы базовой валюты 2
+t_m_from = Label(window, text="Введите сумму базовой валюты 2:")
+t_m_from.pack(pady = [10,10])
+#Ввод суммы для второй базовой валюты для конвертации
+sum_from_second = Entry(window)
+sum_from_second.pack()
 
 #Лэйбл для отображения названия выбранной базовой валюты
 curr_from_name_second = Label(window)
