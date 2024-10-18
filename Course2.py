@@ -4,26 +4,28 @@ from tkinter import *
 from tkinter import ttk
 
 def generation_list_rates():
-    list_currency = []
-    answer = requests.get("https://open.er-api.com/v6/latest/RUB")
+    #list_currency = []
+    #code_base = combo_from.get()
+    answer = requests.get(f"https://open.er-api.com/v6/latest/RUB")
     json_info = answer.json()
-    # i in json_info["rates"].keys():
+    #for i in json_info["rates"].keys():
     #    list_currency.append(i)
     list_currency = list(json_info["rates"].keys())
     return list_currency
 
 #функция для получения информации с entry
 def func_exchange():
-    code = combo.get().upper()
-    if code:
-        answer = requests.get("https://open.er-api.com/v6/latest/RUB")
+    code_target = combo_to.get()
+    code_base = combo_from.get()
+    if code_base and code_target:
+        answer = requests.get(f"https://open.er-api.com/v6/latest/{code_base}]")
         json_info = answer.json()
-        if code in json_info["rates"]:
-            rez = json_info["rates"][code]
-            content_l.config(text=f"1 RUB - {rez} {code}")
+        if code_target in json_info["rates"]:
+            rez = json_info["rates"][code_target]
+            content_l.config(text=f"1 {code_base} - {rez} {code_target}")
             content_l.config(fg="green")
         else:
-            content_l.config(text=f"Кода валюты {code} не найдено")
+            content_l.config(text=f"Кода валюты {code_target} не найдено")
             content_l.config(fg="red")
     else:
         content_l.config(text=f"Кода валюты не введен")
@@ -36,18 +38,22 @@ window.geometry("400x400")
 #list_currency = ["RUB", "EUR", "USD", "GBP", "JPY", "CNY", "CHF", "CAD", "AUD", "NZD", "SEK", "NOK", "BRL", "INR", "KRW", "MXN"]
 sp_currency = generation_list_rates()
 
-t_m = Label(window, text="Выберите код валюты:")
-t_m.pack(pady = [10,10])
+t_m_from = Label(window, text="Выберите код базовой валюты:")
+t_m_from.pack(pady = [10,10])
 
-combo = ttk.Combobox(window, values=sp_currency)
-combo.pack(pady = [10,10])
+combo_from = ttk.Combobox(window, values=sp_currency)
+combo_from.pack(pady = [10,10])
+
+t_m_to = Label(window, text="Выберите код валюты перевода:")
+t_m_to.pack(pady = [10,10])
+
+combo_to = ttk.Combobox(window, values=sp_currency)
+combo_to.pack(pady = [10,10])
 
 content_l = Label(window)
 content_l.pack(pady = [10,10])
 
-btn = Button(window, text="Получить курс рубля", command=func_exchange)
+btn = Button(window, text="Конвертировать валюту", command=func_exchange)
 btn.pack(pady = [10,10])
 
 window.mainloop()
-
-print(sp_currency)
