@@ -174,13 +174,22 @@ def generation_list_rates():
     list_currency = list(json_info["rates"].keys())
     return list_currency
 
+def validate_input(value):
+    try:
+        number = float(value)
+        return number
+    except (ValueError, TypeError):
+        return 1
+
 #Функция конвертации
 def func_exchange():
     code_target = combo_to.get()
     code_base = combo_from.get()
     code_base_second = combo_from_second.get()
-    sum_f = float(sum_from.get())
-    sum_fs = float(sum_from_second.get())
+    sum_f = sum_from.get()
+    validate_input(sum_f)
+    sum_fs = sum_from_second.get()
+    validate_input(sum_fs)
     if code_target and code_base and code_base_second:
         answer = requests.get(f"https://open.er-api.com/v6/latest/{code_base}")
         answer_second = requests.get(f"https://open.er-api.com/v6/latest/{code_base_second}")
@@ -188,9 +197,9 @@ def func_exchange():
         json_info_second = answer_second.json()
         if code_target in json_info["rates"] and code_target in json_info_second["rates"]:
             rez = json_info["rates"][code_target]
-            sum_rez = float(rez) * sum_f
+            sum_rez = float(rez) * float(sum_f)
             rez_second = json_info_second["rates"][code_target]
-            sum_rez_second = float(rez_second) * sum_fs
+            sum_rez_second = float(rez_second) * float(sum_fs)
             content_l.config(text=f"{sum_f} {code_base} - {sum_rez} {code_target} \n {sum_fs} {code_base_second} - {sum_rez_second} {code_target} ")
             content_l.config(fg="green")
         else:
@@ -230,7 +239,7 @@ def update_to_label(event):
 
 window = Tk()
 window.title("Курс валют")
-window.geometry("400x500")
+window.geometry("400x600")
 
 #Запускаем функцию создания списка из кодов валют - в переменную sp_currency
 sp_currency = generation_list_rates()
